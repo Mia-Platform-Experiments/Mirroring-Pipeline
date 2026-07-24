@@ -1,0 +1,34 @@
+include:
+  # job template
+  - project: 'platform/pipelines-templates'
+    file: '/deploy/unified-deploy-job.yml'
+    ref: 'master'
+
+
+DEV:
+  stage: release
+  extends: .deploy_kustomize
+
+  variables:
+    KUBE_URL: "${KUBE_AZURE_NOPROD_URL}"
+    KUBE_TOKEN: "${KUBE_AZURE_NOPROD_TOKEN}"
+    KUBE_CA_PEM: "${KUBE_AZURE_NOPROD_CA_PEM}"
+    ENVIRONMENT_PREFIX: "DEV_"
+
+  only:
+    variables:
+      - $ENVIRONMENT_TO_DEPLOY == "DEV"
+
+PROD:
+  stage: release
+  extends: .deploy_kustomize
+
+  variables:
+    KUBE_URL: "${KUBE_AZURE_NOPROD_URL}"
+    KUBE_TOKEN: "${KUBE_AZURE_NOPROD_TOKEN}"
+    KUBE_CA_PEM: "${KUBE_AZURE_NOPROD_CA_PEM}"
+    ENVIRONMENT_PREFIX: "PROD_"
+
+  only:
+    variables:
+      - $ENVIRONMENT_TO_DEPLOY == "PROD"
