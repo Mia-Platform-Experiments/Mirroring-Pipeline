@@ -1,27 +1,24 @@
-name: Mirroring su GitLab
+name: Mirror to GitLab
 
 on:
   push:
     branches:
-      - '*'
+      - '**'
     tags:
-      - '*'
+      - '**'
 
 jobs:
-  mirror-to-gitlab:
+  mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del codice (history completa)
+      - name: Checkout full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fondamentale per scaricare tutti i branch, i tag e la cronologia completa
+          fetch-depth: 0
 
-      - name: Push su GitLab
+      - name: Push mirror to GitLab
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
-          # SOSTITUISCI questo URL con il percorso del tuo repo su GitLab (es. tuo-utente/tuo-repo.git)
-          GITLAB_URL="https://oauth2:${GITLAB_TOKEN}@git.tools.mia-platform.eu/clients/mia-platform/demo/demo-companies/digital-platform-c/external-pipeline/configurations.git"
-          
-          # Esegue il push di tutti i branch e tag, rimuovendo quelli eliminati (--prune)
-          git push --prune "$GITLAB_URL" "+refs/heads/*:refs/heads/*" "+refs/tags/*:refs/tags/*"
+          git remote add gitlab "https://oauth2:${GITLAB_TOKEN}@git.tools.mia-platform.eu/clients/mia-platform/demo/demo-companies/digital-platform-c/external-pipeline/configurations.git"
+          git push gitlab --prune '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
